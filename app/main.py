@@ -1,15 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, Base
-from schemas import UserCreate, Token
-from models import User
-from auth import create_access_token, get_user_by_username, create_user, verify_password,get_current_user
+from app.database import engine, Base,get_db
+from app.gemini_client import generate_contextual_summary
+from app.schemas import UserCreate, Token, AnalyzeRequest, AnalyzeResponse
+# from app.gemini_client import generate_contextual_summary
+from app.models import User
+from app.auth import create_access_token, get_user_by_username, create_user, verify_password,get_current_user
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from database import get_db
+
 from datetime import timedelta
-from schemas import AnalyzeRequest, AnalyzeResponse
 from .hf_client import zero_shot_classify
 
 
@@ -25,10 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.get("/")
-async def root():
-    return {"message": "Hybrid-Analyzer Backend API"}
 
 
 @app.post("/register", response_model=Token)
@@ -57,44 +54,68 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 
 # Analyze
-CANDIDATE_LABELS = ["Finance", "RH", "IT", "Operations", "Marketing", "Legal"]
+
 
 
 @app.post('/analyze', response_model=AnalyzeResponse)
-async def analyze(req: AnalyzeRequest, db: Session = Depends(get_db),current_user=Depends(get_current_user)):
+async def analyze(req: AnalyzeRequest, db: Session = Depends(get_db)):
  """
     Orchestration complète :
     1. Analyse Zero-Shot avec Hugging Face
     2. Passer la catégorie à Gemini pour résumé + ton
     3. Retour structuré
     """
- # STEP 1 — Hugging Face
+ # Hugging Face
  try:
-       hf_result = await zero_shot_classify(req.text)
+       hf_result =  zero_shot_classify(req.text)
  except Exception as e:
-        raise HTTPException(status_code=500, detail="Erreur Hugging Face.")
- predicted_label = hf_result.get("label")
- score = hf_result.get("score")
+        print("Erreur HF:", e)
+        raise HTTPException(status_code=500, detail="Erreur Hugging Face:{e}")
+   # Vérification format
+ if not isinstance(hf_result, list):
+        raise HTTPException(status_code=500, detail=f"Réponse HF invalide : {hf_result}")
 
- if not predicted_label:
-            raise HTTPException(status_code=500, detail="Classification HF invalide.")
-
-# STEP 2 — Gemini
  try:
-        gemini_res = await generate_contextual_summary(
+        predicted_label = hf_result[0]["label"]
+        score = hf_result[0]["score"]
+
+ except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Format inattendu HF : {hf_result}")
+
+
+
+# 2. Gemini
+ try:
+        gemini_res = generate_contextual_summary(
             text=req.text,
-            category=predicted_label
+            categories=[predicted_label]
         )
  except Exception as e:
-        raise HTTPException(status_code=500, detail="Erreur API Gemini.")
- summary = gemini_res.get("summary")
- tone = gemini_res.get("tone")
+        raise HTTPException(status_code=500, detail=f"Erreur API Gemini : {e}")
+
+ summary = gemini_res.get("summary", "Aucun résumé généré")
+ tone = gemini_res.get("tone", "Neutre")
+
  return AnalyzeResponse(
-      category = predicted_label,
-      score = score,
-      summary = summary,
-      tone = tone 
-      )
+        category=predicted_label,
+        score=score,
+        summary=summary,
+        tone=tone
+    )
+
+
+
+
+
+
+#  summary = gemini_res.get("summary")
+#  tone = gemini_res.get("tone")
+#  return AnalyzeResponse(
+#       category = predicted_label,
+#       score = score,
+#       summary = summary,
+#       tone = tone 
+#       )
 
 
 

@@ -5,17 +5,16 @@ from passlib.context import CryptContext
 from app.config import settings
 import os
 from app.database import get_db
-from config import settings
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.models import User
 from app.schemas import UserCreate
-
+from passlib.hash import argon2
 
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def hash_password(password):

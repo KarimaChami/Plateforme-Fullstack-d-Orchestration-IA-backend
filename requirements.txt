@@ -9,4 +9,8 @@ python-jose
 dotenv
 sqlalchemy
 alembic
-
+python-multipart
+httpx
+argon2-cffi
+genai
+pytest-mock
