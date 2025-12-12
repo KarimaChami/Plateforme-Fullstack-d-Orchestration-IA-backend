@@ -3,7 +3,7 @@ from app.hf_client import zero_shot_classify
 
 def test_mock_hf(mocker):
     input_text = "Le marché boursier a connu une hausse significative aujourd'hui en raison des nouvelles économiques positives"
-    expected_hf_output = [{"label": "Marketing", "score": 0.95}]
+    expected_hf_output = [{"label": "Marketing", "score": 0.95},{"label": "Finance", "score": 0.25}]
 
     # Création d'un faux objet réponse
     fake_response = mocker.Mock()
@@ -23,6 +23,3 @@ def test_mock_hf(mocker):
     assert result == expected_hf_output
     assert result[0] == expected_hf_output[0]
     
-    # assert result == expected_hf_output[0]
-    # assert result["label"] == "Marketing"
-    # assert result["score"] == 0.95

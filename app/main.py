@@ -58,7 +58,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 
 @app.post('/analyze', response_model=AnalyzeResponse)
-async def analyze(req: AnalyzeRequest, db: Session = Depends(get_db)):
+async def analyze(req: AnalyzeRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
  """
     Orchestration complète :
     1. Analyse Zero-Shot avec Hugging Face

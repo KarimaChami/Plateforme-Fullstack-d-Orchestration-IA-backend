@@ -13,12 +13,12 @@ class User(Base):
     createdate = Column(DateTime(timezone=True), server_default=func.now())
     
 # Optionnel : logs
-# class AnalysisLog(Base):
-#     __tablename__ = "analysis_logs"
+class AnalysisLog(Base):
+    __tablename__ = "analysis_logs"
 
-#     id = Column(Integer, primary_key=True)
-#     user_id = Column(Integer, nullable=True)
-#     input_text = Column(Text)
-#     hf_response = Column(JSON)
-#     gemini_response = Column(JSON)
-#     createdat = Column(DateTime(timezone=True), server_default=func.now())
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=True)
+    input_text = Column(Text)
+    hf_response = Column(JSON)
+    gemini_response = Column(JSON)
+    createdat = Column(DateTime(timezone=True), server_default=func.now())

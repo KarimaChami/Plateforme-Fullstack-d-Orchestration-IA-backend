@@ -33,8 +33,7 @@ def zero_shot_classify(text):
         except Exception as e:
             return f"erreur inattendue : {e}"
 # Example usage
+
 # result = zero_shot_classify(
-#     "Le marché boursier a connu une hausse significative aujourd'hui en raison des nouvelles économiques positives.",
-#     categories
-# )
+#     "Le marché boursier a connu une hausse significative aujourd'hui en raison des nouvelles économiques positives.")
 # print(result)
