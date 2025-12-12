@@ -1,17 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base,get_db
-from app.gemini_client import generate_contextual_summary
-from app.schemas import UserCreate, Token, AnalyzeRequest, AnalyzeResponse
+from backend.app.database import engine, Base,get_db
+from backend.app.utils.gemini_client import generate_contextual_summary
+from backend.app.schemas.user_schema import UserCreate
+from backend.app.schemas.token_schema import Token
+from backend.app.schemas.analyze_schema import AnalyzeRequest, AnalyzeResponse
 # from app.gemini_client import generate_contextual_summary
-from app.models import User
-from app.auth import create_access_token, get_user_by_username, create_user, verify_password,get_current_user
+from backend.app.models.user import User
+from backend.app.routes.auth import create_access_token, get_user_by_username, create_user, verify_password,get_current_user
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from datetime import timedelta
-from .hf_client import zero_shot_classify
+from .utils.hf_client import zero_shot_classify
 
 
 

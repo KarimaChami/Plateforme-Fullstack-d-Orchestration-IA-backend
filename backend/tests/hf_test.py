@@ -1,5 +1,5 @@
 import pytest
-from app.hf_client import zero_shot_classify
+from backend.app.utils.hf_client import zero_shot_classify
 
 def test_mock_hf(mocker):
     input_text = "Le marché boursier a connu une hausse significative aujourd'hui en raison des nouvelles économiques positives"

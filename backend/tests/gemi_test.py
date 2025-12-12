@@ -1,5 +1,5 @@
 
-from app.gemini_client import generate_contextual_summary
+from backend.app.utils.gemini_client import generate_contextual_summary
 import json 
 
 def test_mock_gemini(mocker):

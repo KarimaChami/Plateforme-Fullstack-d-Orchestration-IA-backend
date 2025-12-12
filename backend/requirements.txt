@@ -14,3 +14,4 @@ httpx
 argon2-cffi
 genai
 pytest-mock
+google-genai

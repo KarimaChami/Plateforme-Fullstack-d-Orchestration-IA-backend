@@ -2,14 +2,14 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from app.config import settings
+from backend.app.config import settings
 import os
-from app.database import get_db
+from backend.app.database import get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from app.models import User
-from app.schemas import UserCreate
+from backend.app.models.user import User
+from backend.app.schemas.user_schema import UserCreate
 from passlib.hash import argon2
 
 
